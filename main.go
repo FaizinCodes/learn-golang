@@ -8,6 +8,12 @@ import (
 	"time"
 )
 
+// struct
+type student struct {
+	name  string
+	grade int
+}
+
 func main() {
 	// tes print code
 	fmt.Println("hello world", "how", "are", "your", "day")
@@ -454,7 +460,7 @@ cobeloop:
 		return min, max
 	}
 
-	var numbers = []int{2, 3, 4, 3, 4, 2, 3}
+	var numbers = []int{2, 3, 0, 4, 3, 2, 0, 4, 2, 0, 3}
 	var min, max = getMinMax(numbers)
 	fmt.Printf("data : %v\nmin  : %v\nmax  : %v\n", numbers, min, max) //variable %v pada printf berguna untuk menampilkan semua jenis type data
 
@@ -477,6 +483,111 @@ cobeloop:
 
 	fmt.Println("original number :", angkaasli)
 	fmt.Println("filtered number :", newNumbers)
+
+	// contoh closure sebagai nilai kembalian
+	var maxin = 3
+	var howMany, getNumbers = findMax(numbers, maxin)
+	var theNumbers = getNumbers()
+
+	fmt.Println("numbers\t:", numbers)
+	fmt.Printf("find \t: %d\n\n", max)
+
+	fmt.Println("found \t:", howMany)    // 9
+	fmt.Println("value \t:", theNumbers) // [2 3 0 3 2 0 2 0 3]
+
+	// penggunaan fungsi sebagai parameter
+	var data = []string{"wick", "jason", "ethan"}
+	var dataContainsO = filter(data, func(each string) bool {
+		return strings.Contains(each, "o") //strings.contains() digunakan untuk mendeteksi apakah parameter 2 terdapat dalam parameter 1 dengan return boolean
+	})
+	var dataLenght5 = filter(data, func(each string) bool {
+		return len(each) == 5
+	})
+
+	fmt.Println("data asli \t\t:", data)
+	// data asli : [wick jason ethan]
+
+	fmt.Println("filter ada huruf \"o\"\t:", dataContainsO)
+	// filter ada huruf "o" : [jason]
+
+	fmt.Println("filter jumlah huruf \"5\"\t:", dataLenght5)
+	// filter jumlah huruf "5" : [jason ethan]
+
+	// penerapan pointer
+	// karakteristik terdapat tanda asterisk (*)
+	// variable pointer adalah reference atau alamat memori. Variabel pointer berarti variabel yang berisi alamat memori suatu nilai.
+
+	// nilai default variable pointer adalah nil
+
+	var numberA int = 4
+	var numberB *int = &numberA
+
+	/*
+		variabel biasa bisa diambil nilai pointernya,
+		caranya dengan menambahkan tanda ampersand (&) tepat sebelum nama variabel.
+		Metode ini disebut dengan referencing.
+		Dan sebaliknya, nilai asli variabel pointer juga bisa diambil,
+		dengan cara menambahkan tanda asterisk (*) tepat sebelum nama variabel.
+		Metode ini disebut dengan dereferencing
+	*/
+
+	fmt.Println("numberA (VALUE):", numberA)
+	fmt.Println("numberA (ADDRESS):", &numberA)
+	fmt.Println("numberB (VALUE):", *numberB)
+	fmt.Println("numberB (ADDRESS):", numberB)
+
+	fmt.Println("")
+
+	numberA = 8 // perubahan pada variable ini juga akan merubah nilai pada variable numberB karena memiliki alamat memmory uyang sama
+
+	fmt.Println("numberA (VALUE):", numberA)
+	fmt.Println("numberA (ADDRESS):", &numberA)
+	fmt.Println("numberB (VALUE):", *numberB)
+	fmt.Println("numberB (ADDRESS):", numberB)
+
+	// penerapan pointer pada function
+	change(&numberA, 10)
+	fmt.Println("after change:", numberA)
+
+	// penggunaan struct
+	// struct adalah kumpulan definisi variable (atau property) dan atau fungsi method
+	// yang dibungkus sebagai type data baru dengan nama tertentu
+	// property dalam struct, tipe datanya bisa bervariasi
+	// mirip seperti map hanya saja key-nya sudah didefinisikan dari awal dan tipe data tiap itemnya bisa berbeda
+	// dari sebuah struct kita dapat memubuat variable baru, variable tersebut dipanggil dengan istilah object atau object struct
+
+	// declarasi struct dapat dilihat pada line 12
+
+	// penerapan struct
+	var s1 student // struct student di deklarasi pada line 12
+	s1.name = "Aan"
+	s1.grade = 2
+
+	fmt.Println("name :", s1.name)
+	fmt.Println("grade :", s1.grade)
+
+	// insialisasi object struct
+	var a1 = student{}
+	a1.name = "wiki"
+	a1.grade = 8
+
+	var a2 = student{"anggi", 9}
+
+	var a3 = student{name: "ucok"}
+
+	fmt.Println("Student 1:", a1)
+	fmt.Println("Student 2:", a2)
+	fmt.Println("Student 3:", a3)
+
+	// variable object pointer
+	var a4 *student = &a1
+
+	a4.name = "ahmad"
+
+	fmt.Println("Student 1:", a1)
+	fmt.Println("Student 2:", a2)
+	fmt.Println("Student 3:", a3)
+	fmt.Println("Student 4:", *a4)
 
 }
 
@@ -519,4 +630,31 @@ func calculate(d float64) (area float64, circumference float64) {
 	circumference = math.Pi * d
 
 	return
+}
+
+func findMax(ini []int, max int) (int, func() []int) {
+	var res []int
+	for _, e := range ini {
+		if e <= max {
+			res = append(res, e)
+		}
+	}
+	return len(res), func() []int {
+		return res
+	}
+}
+
+func filter(data []string, callback func(string) bool) []string {
+	var result []string
+	for _, each := range data {
+		if filtered := callback(each); filtered {
+			result = append(result, each)
+		}
+	}
+	return result
+}
+
+// penrapan function with pointer
+func change(original *int, value int) {
+	*original = value
 }
